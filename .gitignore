@@ -1,0 +1,27 @@
+# Build outputs
+Builds/*/build/
+Builds/*/intermediates/
+Builds/*/x64/
+Builds/*/Debug/
+Builds/*/Release/
+Builds/*/.vs/
+Builds/MacOSX/build/
+Builds/MacOSX/**/xcuserdata/
+
+# IDE files
+*.suo
+*.user
+*.vcxproj.user
+*.userosscache
+*.sln.docstates
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor backup files
+*~
+*.bak
+*.swp
