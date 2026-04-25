@@ -21,7 +21,7 @@ MainComponent::MainComponent()
     frequencySlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 90, 0);
     frequencySlider.setPopupDisplayEnabled(true, false, this);
     frequencySlider.setTextValueSuffix(" Frequency");
-    frequencySlider.setValue(synthEngine.voices[0].targetFrequency, juce::dontSendNotification);
+    frequencySlider.setValue(synthEngine.getBaseFrequency(), juce::dontSendNotification);
     frequencySlider.setSkewFactorFromMidPoint(500);
 
     frequencySlider.addListener(this);
@@ -87,11 +87,11 @@ void MainComponent::sliderValueChanged (juce::Slider* s)
 {
     if (s == &slider)
     {
-        synthEngine.targetAmplitude = (float) s->getValue();
+        synthEngine.setTargetAmplitude ((float) s->getValue());
     }
     else if (s == &frequencySlider)
     {
-        synthEngine.baseFrequency = (float) s->getValue();
+        synthEngine.setBaseFrequency ((float) s->getValue());
     }
 }
 

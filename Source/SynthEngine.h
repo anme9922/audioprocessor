@@ -1,8 +1,9 @@
 #pragma once
 
-#include <JuceHeader.h>
-#include <vector>
+#include <juce_audio_basics/juce_audio_basics.h>
+#include <array>
 #include <atomic>
+
 class SynthEngine
 {
 public:
@@ -13,6 +14,14 @@ public:
     void getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferToFill);
     void releaseResources();
 
+    void  setBaseFrequency   (float hz)   { baseFrequency   = hz; }
+    void  setTargetAmplitude (float amp)  { targetAmplitude = amp; }
+    float getBaseFrequency() const        { return baseFrequency.load(); }
+
+private:
+    static constexpr size_t MAX_VOICES     = 20;
+    static constexpr size_t INITIAL_VOICES = 3;
+
     struct Voice
     {
         float currentFrequency = 0.0f;
@@ -20,17 +29,15 @@ public:
         float currentAngle     = 0.0f;
         float angleDelta       = 0.0f;
     };
-    std::vector<Voice> voices;
-    std::atomic<float> targetAmplitude;
-    std::atomic<float> baseFrequency;
-
-private:
-    static constexpr size_t MAX_FREQUENCIES = 20;
-
-
-    juce::SmoothedValue<float> m_amplitude;
-
-    float currentSampleRate = 44100.0f;
 
     float updateAngleData (float frequency);
+
+    std::array<Voice, MAX_VOICES> voices {};
+    size_t numActiveVoices = INITIAL_VOICES;
+
+    juce::SmoothedValue<float> m_amplitude;
+    float currentSampleRate = 44100.0f;
+
+    std::atomic<float> targetAmplitude { 0.1f };
+    std::atomic<float> baseFrequency   { 440.0f };
 };
