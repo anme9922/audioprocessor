@@ -4,6 +4,8 @@
               useAppConfig="0" addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1">
   <MAINGROUP id="USvqw8" name="SimpleNoiseSynthTest">
     <GROUP id="{C763B7BD-3E20-6CAE-F722-DEB1666FE8F8}" name="Source">
+      <FILE id="hFWsiH" name="SynthEngine.h" compile="0" resource="0" file="Source/SynthEngine.h"/>
+      <FILE id="zURKn6" name="SynthEngine.cpp" compile="1" resource="0" file="Source/SynthEngine.cpp"/>
       <FILE id="SiU4fQ" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
       <FILE id="G7lzY8" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>
       <FILE id="PhxCV7" name="MainComponent.cpp" compile="1" resource="0"
