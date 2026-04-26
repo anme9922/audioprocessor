@@ -32,6 +32,8 @@ private:
     juce::Slider slider;
     juce::Slider frequencySlider;
     juce::TextButton muteButton;
+    juce::TextButton playButton;
+    juce::TextButton stopButton;
 
     SynthEngine synthEngine;
 

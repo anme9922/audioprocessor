@@ -6,7 +6,7 @@ MainComponent::MainComponent()
     setSize (800, 600);
 
     slider.setSliderStyle(juce::Slider::LinearHorizontal);
-    slider.setRange(0.0, 0.3, 0.05);
+    slider.setRange(0.0, 0.3, 0.005);
     slider.setTextBoxStyle(juce::Slider::NoTextBox, false, 90, 0);
     slider.setPopupDisplayEnabled(true, false, this);
     slider.setTextValueSuffix(" Volume");
@@ -43,7 +43,19 @@ MainComponent::MainComponent()
         }
     };
 
+    playButton.setButtonText("Play");
+    playButton.onClick = [this] {
+        synthEngine.noteOn();
+    };
+
+    stopButton.setButtonText("Stop");
+    stopButton.onClick = [this] {
+        synthEngine.noteOff();
+    };
+
     addAndMakeVisible(&muteButton);
+    addAndMakeVisible(&playButton);
+    addAndMakeVisible(&stopButton);
    
 
     // Some platforms require permissions to open input channels so request that here
@@ -108,4 +120,7 @@ void MainComponent::resized()
     slider.setBounds(40, 30, getWidth() - 80, 20);
     frequencySlider.setBounds(40, 60, getWidth() - 80, 20);
     muteButton.setBounds(40, 90, 100, 20);
+    playButton.setBounds(160, 90, 100, 20);
+    stopButton.setBounds(280, 90, 100, 20);
+    // if(slider.getValue() <= )
 }
