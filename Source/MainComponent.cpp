@@ -6,7 +6,7 @@ MainComponent::MainComponent()
     setSize (800, 600);
 
     slider.setSliderStyle(juce::Slider::LinearHorizontal);
-    slider.setRange(0.0, 0.3, 0.05);
+    slider.setRange(0.0, 0.3, 0.005);
     slider.setTextBoxStyle(juce::Slider::NoTextBox, false, 90, 0);
     slider.setPopupDisplayEnabled(true, false, this);
     slider.setTextValueSuffix(" Volume");
@@ -15,6 +15,12 @@ MainComponent::MainComponent()
     slider.addListener(this);
 
     addAndMakeVisible(&slider);
+
+    
+    initSlider(attackSlider, attackParams);
+    initSlider(decaySlider, decayParams);
+    initSlider(sustainSlider, sustainParams);
+    initSlider(releaseSlider, releaseParams);
 
     frequencySlider.setSliderStyle(juce::Slider::LinearHorizontal);
     frequencySlider.setRange(50, 5000, 0.1f);
@@ -43,7 +49,19 @@ MainComponent::MainComponent()
         }
     };
 
+    playButton.setButtonText("Play");
+    playButton.onClick = [this] {
+        synthEngine.noteOn();
+    };
+
+    stopButton.setButtonText("Stop");
+    stopButton.onClick = [this] {
+        synthEngine.noteOff();
+    };
+
     addAndMakeVisible(&muteButton);
+    addAndMakeVisible(&playButton);
+    addAndMakeVisible(&stopButton);
    
 
     // Some platforms require permissions to open input channels so request that here
@@ -93,6 +111,22 @@ void MainComponent::sliderValueChanged (juce::Slider* s)
     {
         synthEngine.setBaseFrequency ((float) s->getValue());
     }
+    else if(s == &attackSlider)
+    {
+        synthEngine.setAttack ( (float) s->getValue() );
+    }
+    else if(s == &decaySlider)
+    {
+        synthEngine.setDecay ( (float) s->getValue() );
+    }
+    else if(s == &sustainSlider)
+    {
+        synthEngine.setSustain ( (float) s->getValue() );
+    }
+    else if(s == &releaseSlider)
+    {
+        synthEngine.setRelease ( (float) s->getValue() );
+    }
 }
 
 
@@ -108,4 +142,27 @@ void MainComponent::resized()
     slider.setBounds(40, 30, getWidth() - 80, 20);
     frequencySlider.setBounds(40, 60, getWidth() - 80, 20);
     muteButton.setBounds(40, 90, 100, 20);
+    playButton.setBounds(160, 90, 100, 20);
+    stopButton.setBounds(280, 90, 100, 20);
+
+    int i = 0;
+    for(const auto s : envSliders)
+    {
+        s->setBounds(40, 140 + (i*20), getWidth() - 80, 20);
+        i++;
+    }
+}
+
+void MainComponent::initSlider(juce::Slider &slider, SliderParams &sliderParams)
+{
+    slider.setSliderStyle(juce::Slider::LinearHorizontal);
+    slider.setRange(sliderParams.rangeMin, sliderParams.rangeMax, 0.005);
+    slider.setTextBoxStyle(juce::Slider::NoTextBox, false, 90, 0);
+    slider.setPopupDisplayEnabled(true, false, this);
+    slider.setTextValueSuffix(sliderParams.text);
+    slider.setValue(sliderParams.initValue);
+
+    slider.addListener(this);
+
+    addAndMakeVisible(&slider);
 }

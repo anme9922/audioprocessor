@@ -4,12 +4,13 @@ SynthEngine::SynthEngine()
 {
     for (size_t i = 0; i < numActiveVoices; ++i)
     {
-        const auto freq = 440.0f / float (i + 1);
+        const auto freq = baseFrequency.load() / float (i + 1);
         voices[i].currentFrequency = freq;
         voices[i].targetFrequency  = freq;
     }
 
-    m_amplitude = juce::SmoothedValue<float> (0.1f);
+    m_amplitude = juce::SmoothedValue<float> (targetAmplitude.load());
+
 }
 
 SynthEngine::~SynthEngine() = default;
@@ -26,7 +27,10 @@ void SynthEngine::prepareToPlay (int samplesPerBlockExpected, double sampleRate)
     for (size_t i = 0; i < numActiveVoices; ++i)
         voices[i].angleDelta = updateAngleData (voices[i].currentFrequency);
 
-    m_amplitude.reset (currentSampleRate, 0.02); // 20 ms ramp
+    m_amplitude.reset (currentSampleRate, AMPLITUDE_RAMP);
+
+    envelope.setParameters(envelopeParams);
+    envelope.setSampleRate(sampleRate);
 }
 
 void SynthEngine::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferToFill)
@@ -36,10 +40,20 @@ void SynthEngine::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferT
     if (numActiveVoices == 0)
         return;
 
+    if(envDirty.exchange(false)) {
+        juce::ADSR::Parameters& params {envAttack.load(), envDecay.load(), envSustain.load(), envRelease.load()};
+        envelope.setParameters(params);
+    }
+
+    if(noteOnRequested.exchange(false))
+        envelope.noteOn();
+    if(noteOffRequested.exchange(false))
+        envelope.noteOff();
+
     const auto base = baseFrequency.load();
     voices[0].targetFrequency = base;
     for (size_t i = 1; i < numActiveVoices; ++i)
-        voices[i].targetFrequency = std::max (base / float (i + 1), 20.0f);
+        voices[i].targetFrequency = std::max (base / float (i + 1), MIN_VOICE_FREQ);
 
     m_amplitude.setTargetValue (targetAmplitude);
 
@@ -53,6 +67,7 @@ void SynthEngine::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferT
     for (int sample = 0; sample < numSamples; ++sample)
     {
         const auto gain = m_amplitude.getNextValue();
+        const auto env = envelope.getNextSample();
         auto currentSample = 0.0f;
 
         for (size_t i = 0; i < numActiveVoices; ++i)
@@ -67,7 +82,7 @@ void SynthEngine::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferT
         currentSample /= (float) numActiveVoices;
 
         for (auto channel = 0; channel < numChannels; ++channel)
-            bufferToFill.buffer->getWritePointer (channel, bufferToFill.startSample)[sample] = currentSample * gain;
+            bufferToFill.buffer->getWritePointer (channel, bufferToFill.startSample)[sample] = currentSample * env * gain;
     }
 }
 
