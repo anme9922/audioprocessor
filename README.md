@@ -35,7 +35,7 @@ make CONFIG=Release
 ## Roadmap
 
 - [ ] MIDI-Eingabe (Note-On/Off, Velocity, polyphone Voice-Allocation)
-- [ ] ADSR-Envelope pro Voice
+- [x] ADSR-Envelope pro Voice
 - [ ] Biquad-Filter (LPF/HPF mit Cutoff + Resonance)
 - [ ] Plugin-Format (VST3) statt Standalone
 - [ ] Unit-Tests für DSP-Komponenten

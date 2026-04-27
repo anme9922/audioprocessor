@@ -25,7 +25,7 @@ public:
     void setSustain(float s) {envSustain = s; envDirty = true;}
     void setRelease(float r) {envRelease = r; envDirty = true;}
 
-    private:
+private:
     static constexpr size_t MAX_VOICES     = 20;
     static constexpr size_t INITIAL_VOICES = 3;
     static constexpr float AMPLITUDE_RAMP  = 0.02f; 
@@ -40,7 +40,7 @@ public:
     };
     
     juce::ADSR envelope;
-    juce::ADSR::Parameters envelopeParams { 0.05f, 1.0f, 1.0f, 2.0f }; // A D S R in s
+    juce::ADSR::Parameters envelopeParams;
     std::atomic<bool> noteOnRequested { false };
     std::atomic<bool> noteOffRequested { false };
     
@@ -60,4 +60,6 @@ public:
     std::atomic<float> envSustain { 1.0f };
     std::atomic<float> envRelease { 0.5f };
     std::atomic<bool> envDirty { false };
+
+    juce::Random random;
 };

@@ -41,7 +41,7 @@ void SynthEngine::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferT
         return;
 
     if(envDirty.exchange(false)) {
-        const juce::ADSR::Parameters& params {envAttack.load(), envDecay.load(), envSustain.load(), envRelease.load()};
+        juce::ADSR::Parameters& params {envAttack.load(), envDecay.load(), envSustain.load(), envRelease.load()};
         envelope.setParameters(params);
     }
 
