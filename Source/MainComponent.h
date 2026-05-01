@@ -40,7 +40,23 @@ private:
     juce::Slider sustainSlider;
     juce::Slider releaseSlider;
 
-    std::array<juce::Slider*, 4> envSliders {&attackSlider, &decaySlider, &sustainSlider, &releaseSlider};
+    juce::Label attackLabel;
+    juce::Label decayLabel;
+    juce::Label sustainLabel;
+    juce::Label releaseLabel;
+
+    struct SliderComponent
+    {
+        juce::Slider* slider;
+        juce::Label*  label;
+    };
+
+    std::array<SliderComponent, 4> envSliders {{
+        { &attackSlider,  &attackLabel  },
+        { &decaySlider,   &decayLabel   },
+        { &sustainSlider, &sustainLabel },
+        { &releaseSlider, &releaseLabel }
+    }};
 
     SynthEngine synthEngine;
 

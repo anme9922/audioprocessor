@@ -22,6 +22,11 @@ MainComponent::MainComponent()
     initSlider(sustainSlider, sustainParams);
     initSlider(releaseSlider, releaseParams);
 
+    attackLabel.setText("A", juce::NotificationType::dontSendNotification);
+    decayLabel.setText("D", juce::NotificationType::dontSendNotification);
+    sustainLabel.setText("S", juce::NotificationType::dontSendNotification);
+    releaseLabel.setText("R", juce::NotificationType::dontSendNotification);
+
     frequencySlider.setSliderStyle(juce::Slider::LinearHorizontal);
     frequencySlider.setRange(50, 5000, 0.1f);
     frequencySlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 90, 0);
@@ -62,6 +67,11 @@ MainComponent::MainComponent()
     addAndMakeVisible(&muteButton);
     addAndMakeVisible(&playButton);
     addAndMakeVisible(&stopButton);
+
+    addAndMakeVisible(&attackLabel);
+    addAndMakeVisible(&decayLabel);
+    addAndMakeVisible(&sustainLabel);
+    addAndMakeVisible(&releaseLabel);
    
 
     // Some platforms require permissions to open input channels so request that here
@@ -148,7 +158,8 @@ void MainComponent::resized()
     int i = 0;
     for(const auto s : envSliders)
     {
-        s->setBounds(40, 140 + (i*20), getWidth() - 80, 20);
+        s.slider->setBounds(60, 140 + (i*20), getWidth() - 80, 20);
+        s.label->setBounds(40, 140 + (i*20), 20, 20);
         i++;
     }
 }

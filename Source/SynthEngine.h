@@ -1,6 +1,7 @@
 #pragma once
 
 #include <juce_audio_basics/juce_audio_basics.h>
+#include <juce_dsp/juce_dsp.h>
 #include <array>
 #include <atomic>
 
@@ -62,4 +63,6 @@ private:
     std::atomic<bool> envDirty { false };
 
     juce::Random random;
+
+    juce::dsp::LadderFilter<float> lowpassFilter;
 };
