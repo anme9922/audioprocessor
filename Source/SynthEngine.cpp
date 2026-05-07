@@ -31,6 +31,13 @@ void SynthEngine::prepareToPlay (int samplesPerBlockExpected, double sampleRate)
 
     envelope.setParameters(envelopeParams);
     envelope.setSampleRate(sampleRate);
+    
+    lowpassFilter.setMode(juce::dsp::LadderFilterMode::LPF12);
+    lowpassFilter.setCutoffFrequencyHz(cutoffFrequency.load());
+    juce::dsp::ProcessSpec filterSpec { sampleRate, (juce::uint32)samplesPerBlockExpected, 2 };
+    lowpassFilter.prepare(filterSpec);
+
+
 }
 
 void SynthEngine::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferToFill)
@@ -41,14 +48,16 @@ void SynthEngine::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferT
         return;
 
     if(envDirty.exchange(false)) {
-        juce::ADSR::Parameters& params {envAttack.load(), envDecay.load(), envSustain.load(), envRelease.load()};
-        envelope.setParameters(params);
+        envelope.setParameters ({ envAttack.load(), envDecay.load(), envSustain.load(), envRelease.load() });
     }
 
     if(noteOnRequested.exchange(false))
         envelope.noteOn();
     if(noteOffRequested.exchange(false))
         envelope.noteOff();
+
+    if (cutoffDirty.exchange(false))
+        lowpassFilter.setCutoffFrequencyHz(cutoffFrequency.load());
 
     const auto base = baseFrequency.load();
     voices[0].targetFrequency = base;
@@ -84,6 +93,11 @@ void SynthEngine::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferT
         for (auto channel = 0; channel < numChannels; ++channel)
             bufferToFill.buffer->getWritePointer (channel, bufferToFill.startSample)[sample] = currentSample * env * gain;
     }
+
+    juce::dsp::AudioBlock<float> block (*bufferToFill.buffer);
+    auto subBlock = block.getSubBlock ((size_t) bufferToFill.startSample, (size_t) numSamples);
+    juce::dsp::ProcessContextReplacing<float> ctx (subBlock);
+    lowpassFilter.process (ctx);
 }
 
 void SynthEngine::releaseResources()

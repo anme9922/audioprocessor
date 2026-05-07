@@ -1,41 +1,43 @@
 # SimpleNoiseSynth
 
-Ein additiver Sinus-Synthesizer in C++ mit JUCE. Spielt einen Grundton mit zwei
-Sub-Harmonischen (f, f/2, f/3) und smoothem Volume-Ramping.
+An additive sine synthesizer in C++ with JUCE. It plays a base sound with two subharmonics and smoothed volume ramping.
 
 ## Features
 
-- Drei-stimmiger additiver Synthesizer (Grundton + Sub-Harmonische)
-- Frequenz-Slider mit Skew-Mapping (50 Hz – 5 kHz)
-- Volume-Slider mit 20 ms Smoothing
-- Mute/Unmute mit Wiederherstellung der vorherigen Lautstärke
+- Additive sine synthesizer with base frequency and subharmonics
+- Frequency slider with skew mapping
+- Volume slider with smooth ramping
+- Mute/Unmute button
+- ADSR envelope
+- LowPass filter based on Moog LadderFilter
 
-## Architektur-Highlights
+## Architecture Highlights
 
-- **Real-Time-sicherer Audio-Callback**: keine Heap-Allokationen, keine Locks,
-  keine Syscalls auf dem Audio-Thread.
-- **Lock-free Parameter-Updates**: GUI-Thread schreibt in `std::atomic<float>`,
-  Audio-Thread liest einmal pro Block.
-- **GUI als Single Source of Truth**: der Audio-Thread spiegelt nur,
-  was der Slider vorgibt — `juce::SmoothedValue` wird nie vom GUI-Thread berührt.
-- **Voice-Struct** statt paralleler Vektoren für klare Zustandskapselung.
+- **Real-time-safe audio callback**: no heap allocations, no locks,
+  no syscalls on the audio thread.
+- **Lock-free parameter updates**: GUI thread writes to `std::atomic<float>`,
+  audio thread reads once per block.
+- **GUI as single source of truth**: the audio thread only mirrors
+  what the slider provides — `juce::SmoothedValue` is never touched by the GUI thread.
+- **Voice struct** instead of parallel vectors for clear state encapsulation.
 
 ## Build
 
-JUCE 7+ und Projucer benötigt.
+JUCE 7+ and Projucer required.
 
 ```
 # Linux
 cd Builds/LinuxMakefile
 make CONFIG=Release
 
-# macOS / Windows: jeweiliges Builds/-Unterverzeichnis öffnen
+# macOS / Windows: open build path
 ```
 
 ## Roadmap
 
-- [ ] MIDI-Eingabe (Note-On/Off, Velocity, polyphone Voice-Allocation)
-- [x] ADSR-Envelope pro Voice
-- [ ] Biquad-Filter (LPF/HPF mit Cutoff + Resonance)
-- [ ] Plugin-Format (VST3) statt Standalone
-- [ ] Unit-Tests für DSP-Komponenten
+- [ ] MIDI input (Note On/Off, velocity, polyphonic voice allocation)
+- [x] ADSR envelope per voice
+- [ ] Biquad filter (LPF/HPF with cutoff + resonance)
+- [ ] Plugin format (VST3) instead of standalone
+- [ ] Unit tests for DSP components
+- [ ] Modern GUI design and sound visualization
