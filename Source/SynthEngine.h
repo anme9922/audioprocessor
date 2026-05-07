@@ -27,7 +27,7 @@ public:
     void setSustain(float s) {envSustain = s; envDirty = true;}
     void setRelease(float r) {envRelease = r; envDirty = true;}
 
-    void setCutoffFrequency(float f) { cutoffFrequency = f; }
+    void setCutoffFrequency(float f) { cutoffFrequency = f; cutoffDirty = true;}
     float getCutoffFrequency() const { return cutoffFrequency.load(); }
 
 private:
@@ -67,6 +67,7 @@ private:
     std::atomic<bool> envDirty { false };
 
     std::atomic<float> cutoffFrequency { 1000.0f };
+    std::atomic<bool> cutoffDirty { false };
 
     juce::Random random;
 

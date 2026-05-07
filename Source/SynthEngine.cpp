@@ -56,7 +56,8 @@ void SynthEngine::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferT
     if(noteOffRequested.exchange(false))
         envelope.noteOff();
 
-    lowpassFilter.setCutoffFrequencyHz(cutoffFrequency.load());
+    if (cutoffDirty.exchange(false))
+        lowpassFilter.setCutoffFrequencyHz(cutoffFrequency.load());
 
     const auto base = baseFrequency.load();
     voices[0].targetFrequency = base;

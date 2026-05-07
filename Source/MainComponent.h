@@ -28,7 +28,7 @@ public:
 
 private:
     //==============================================================================
-    float storedAmplitude;
+    float storedAmplitude = 0.0f;
     juce::Slider slider;
     juce::Slider frequencySlider;
     juce::Slider cutoffSlider;
@@ -78,7 +78,7 @@ private:
     SliderParams sustainParams {0.0f, 1.0f, " Sustain", 0.1f};
     SliderParams releaseParams {0.0f, 5.0f, " Release", 0.07f};
 
-    SliderParams cutoffParams {50.0f, 5000.0f, " Cutoff", 500.0f};
+    SliderParams cutoffParams {50.0f, 5000.0f, " Cutoff", 1000.0f};
 
     void initSlider(juce::Slider &slider, SliderParams &sliderParams);
 

@@ -171,7 +171,7 @@ void MainComponent::resized()
     cutoffLabel.setBounds(40, 250, 40, 20);
 
     int i = 0;
-    for(const auto s : envSliders)
+    for(const auto& s : envSliders)
     {
         s.slider->setBounds(60, 140 + (i*20), getWidth() - 80, 20);
         s.label->setBounds(40, 140 + (i*20), 20, 20);
