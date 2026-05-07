@@ -31,6 +31,7 @@ private:
     float storedAmplitude;
     juce::Slider slider;
     juce::Slider frequencySlider;
+    juce::Slider cutoffSlider;
     juce::TextButton muteButton;
     juce::TextButton playButton;
     juce::TextButton stopButton;
@@ -44,6 +45,10 @@ private:
     juce::Label decayLabel;
     juce::Label sustainLabel;
     juce::Label releaseLabel;
+
+    juce::Label ampLabel;
+    juce::Label freqLabel;
+    juce::Label cutoffLabel;
 
     struct SliderComponent
     {
@@ -72,6 +77,8 @@ private:
     SliderParams decayParams {0.0f, 5.0f, " Decay", 0.1f};
     SliderParams sustainParams {0.0f, 1.0f, " Sustain", 0.1f};
     SliderParams releaseParams {0.0f, 5.0f, " Release", 0.07f};
+
+    SliderParams cutoffParams {50.0f, 5000.0f, " Cutoff", 500.0f};
 
     void initSlider(juce::Slider &slider, SliderParams &sliderParams);
 

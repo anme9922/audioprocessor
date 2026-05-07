@@ -33,7 +33,7 @@ void SynthEngine::prepareToPlay (int samplesPerBlockExpected, double sampleRate)
     envelope.setSampleRate(sampleRate);
     
     lowpassFilter.setMode(juce::dsp::LadderFilterMode::LPF12);
-    lowpassFilter.setCutoffFrequencyHz(1000.0f);
+    lowpassFilter.setCutoffFrequencyHz(cutoffFrequency.load());
     juce::dsp::ProcessSpec filterSpec { sampleRate, (juce::uint32)samplesPerBlockExpected, 2 };
     lowpassFilter.prepare(filterSpec);
 
@@ -55,6 +55,8 @@ void SynthEngine::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferT
         envelope.noteOn();
     if(noteOffRequested.exchange(false))
         envelope.noteOff();
+
+    lowpassFilter.setCutoffFrequencyHz(cutoffFrequency.load());
 
     const auto base = baseFrequency.load();
     voices[0].targetFrequency = base;

@@ -21,11 +21,16 @@ MainComponent::MainComponent()
     initSlider(decaySlider, decayParams);
     initSlider(sustainSlider, sustainParams);
     initSlider(releaseSlider, releaseParams);
+    initSlider(cutoffSlider, cutoffParams);
 
     attackLabel.setText("A", juce::NotificationType::dontSendNotification);
     decayLabel.setText("D", juce::NotificationType::dontSendNotification);
     sustainLabel.setText("S", juce::NotificationType::dontSendNotification);
     releaseLabel.setText("R", juce::NotificationType::dontSendNotification);
+
+    ampLabel.setText("Vol", juce::NotificationType::dontSendNotification);
+    freqLabel.setText("Freq", juce::NotificationType::dontSendNotification);
+    cutoffLabel.setText("Cutoff", juce::NotificationType::dontSendNotification);
 
     frequencySlider.setSliderStyle(juce::Slider::LinearHorizontal);
     frequencySlider.setRange(50, 5000, 0.1f);
@@ -34,9 +39,7 @@ MainComponent::MainComponent()
     frequencySlider.setTextValueSuffix(" Frequency");
     frequencySlider.setValue(synthEngine.getBaseFrequency(), juce::dontSendNotification);
     frequencySlider.setSkewFactorFromMidPoint(500);
-
     frequencySlider.addListener(this);
-
     addAndMakeVisible(&frequencySlider);
 
     muteButton.setButtonText ("mute");
@@ -72,6 +75,9 @@ MainComponent::MainComponent()
     addAndMakeVisible(&decayLabel);
     addAndMakeVisible(&sustainLabel);
     addAndMakeVisible(&releaseLabel);
+    addAndMakeVisible(&ampLabel);
+    addAndMakeVisible(&freqLabel);
+    addAndMakeVisible(&cutoffLabel);
    
 
     // Some platforms require permissions to open input channels so request that here
@@ -137,6 +143,10 @@ void MainComponent::sliderValueChanged (juce::Slider* s)
     {
         synthEngine.setRelease ( (float) s->getValue() );
     }
+    else if(s == &cutoffSlider)
+    {
+        synthEngine.setCutoffFrequency ( (float) s->getValue() );
+    }
 }
 
 
@@ -149,11 +159,16 @@ void MainComponent::paint (juce::Graphics& g)
 
 void MainComponent::resized()
 {
-    slider.setBounds(40, 30, getWidth() - 80, 20);
-    frequencySlider.setBounds(40, 60, getWidth() - 80, 20);
+    slider.setBounds(80, 30, getWidth() - 120, 20);
+    ampLabel.setBounds(40, 30, 40, 20);
+    frequencySlider.setBounds(80, 60, getWidth() - 120, 20);
+    freqLabel.setBounds(40, 60, 40, 20);
     muteButton.setBounds(40, 90, 100, 20);
     playButton.setBounds(160, 90, 100, 20);
     stopButton.setBounds(280, 90, 100, 20);
+
+    cutoffSlider.setBounds(80, 250, getWidth() - 120, 20);
+    cutoffLabel.setBounds(40, 250, 40, 20);
 
     int i = 0;
     for(const auto s : envSliders)

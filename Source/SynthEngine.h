@@ -2,6 +2,7 @@
 
 #include <juce_audio_basics/juce_audio_basics.h>
 #include <juce_dsp/juce_dsp.h>
+
 #include <array>
 #include <atomic>
 
@@ -25,6 +26,9 @@ public:
     void setDecay(float d) {envDecay = d; envDirty = true;}
     void setSustain(float s) {envSustain = s; envDirty = true;}
     void setRelease(float r) {envRelease = r; envDirty = true;}
+
+    void setCutoffFrequency(float f) { cutoffFrequency = f; }
+    float getCutoffFrequency() const { return cutoffFrequency.load(); }
 
 private:
     static constexpr size_t MAX_VOICES     = 20;
@@ -62,7 +66,9 @@ private:
     std::atomic<float> envRelease { 0.5f };
     std::atomic<bool> envDirty { false };
 
+    std::atomic<float> cutoffFrequency { 1000.0f };
+
     juce::Random random;
 
-    juce::dsp::LadderFilter<float> lowpassFilter;
+    juce::dsp::LadderFilter<float> lowpassFilter; 
 };
