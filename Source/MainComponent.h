@@ -41,6 +41,8 @@ private:
     juce::Slider sustainSlider;
     juce::Slider releaseSlider;
 
+    juce::Slider numVoicesSlider;
+
     juce::Label attackLabel;
     juce::Label decayLabel;
     juce::Label sustainLabel;
@@ -49,6 +51,7 @@ private:
     juce::Label ampLabel;
     juce::Label freqLabel;
     juce::Label cutoffLabel;
+    juce::Label numVoicesLabel;
 
     struct SliderComponent
     {
@@ -79,6 +82,10 @@ private:
     SliderParams releaseParams {0.0f, 5.0f, " Release", 0.07f};
 
     SliderParams cutoffParams {50.0f, 5000.0f, " Cutoff", 1000.0f};
+    SliderParams numVoicesParams {1, 20, " Number of Voices", 3};
+
+    SliderParams volumeParams {0.0f, 0.4f, " Volume", 0.1f};
+    SliderParams frequencyParams {50.0f, 5000.0f, " Frequency", 440.0f};
 
     void initSlider(juce::Slider &slider, SliderParams &sliderParams);
 

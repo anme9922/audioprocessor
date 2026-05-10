@@ -4,24 +4,15 @@
 MainComponent::MainComponent()
 {
     setSize (800, 600);
-
-    slider.setSliderStyle(juce::Slider::LinearHorizontal);
-    slider.setRange(0.0, 0.3, 0.005);
-    slider.setTextBoxStyle(juce::Slider::NoTextBox, false, 90, 0);
-    slider.setPopupDisplayEnabled(true, false, this);
-    slider.setTextValueSuffix(" Volume");
-    slider.setValue(0.1);
-
-    slider.addListener(this);
-
-    addAndMakeVisible(&slider);
-
     
+    initSlider(slider, volumeParams);
     initSlider(attackSlider, attackParams);
     initSlider(decaySlider, decayParams);
     initSlider(sustainSlider, sustainParams);
     initSlider(releaseSlider, releaseParams);
     initSlider(cutoffSlider, cutoffParams);
+    initSlider(numVoicesSlider, numVoicesParams);
+    initSlider(frequencySlider, frequencyParams);
 
     attackLabel.setText("A", juce::NotificationType::dontSendNotification);
     decayLabel.setText("D", juce::NotificationType::dontSendNotification);
@@ -31,16 +22,7 @@ MainComponent::MainComponent()
     ampLabel.setText("Vol", juce::NotificationType::dontSendNotification);
     freqLabel.setText("Freq", juce::NotificationType::dontSendNotification);
     cutoffLabel.setText("Cutoff", juce::NotificationType::dontSendNotification);
-
-    frequencySlider.setSliderStyle(juce::Slider::LinearHorizontal);
-    frequencySlider.setRange(50, 5000, 0.1f);
-    frequencySlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 90, 0);
-    frequencySlider.setPopupDisplayEnabled(true, false, this);
-    frequencySlider.setTextValueSuffix(" Frequency");
-    frequencySlider.setValue(synthEngine.getBaseFrequency(), juce::dontSendNotification);
-    frequencySlider.setSkewFactorFromMidPoint(500);
-    frequencySlider.addListener(this);
-    addAndMakeVisible(&frequencySlider);
+    numVoicesLabel.setText("Voices", juce::NotificationType::dontSendNotification);
 
     muteButton.setButtonText ("mute");
     muteButton.onClick = [this] {
@@ -78,6 +60,7 @@ MainComponent::MainComponent()
     addAndMakeVisible(&ampLabel);
     addAndMakeVisible(&freqLabel);
     addAndMakeVisible(&cutoffLabel);
+    addAndMakeVisible(&numVoicesLabel);
    
 
     // Some platforms require permissions to open input channels so request that here
@@ -147,6 +130,10 @@ void MainComponent::sliderValueChanged (juce::Slider* s)
     {
         synthEngine.setCutoffFrequency ( (float) s->getValue() );
     }
+    else if(s == &numVoicesSlider)
+    {
+        synthEngine.setNumActiveVoices ( (size_t) s->getValue() );
+    }
 }
 
 
@@ -169,6 +156,9 @@ void MainComponent::resized()
 
     cutoffSlider.setBounds(80, 250, getWidth() - 120, 20);
     cutoffLabel.setBounds(40, 250, 40, 20);
+
+    numVoicesSlider.setBounds(80, 270, getWidth() - 120, 20);
+    numVoicesLabel.setBounds(40, 270, 40, 20);
 
     int i = 0;
     for(const auto& s : envSliders)

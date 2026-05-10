@@ -30,6 +30,8 @@ public:
     void setCutoffFrequency(float f) { cutoffFrequency = f; cutoffDirty = true;}
     float getCutoffFrequency() const { return cutoffFrequency.load(); }
 
+    void setNumActiveVoices(size_t v) { numActiveVoices = v; numVoicesDirty = true; }
+
 private:
     static constexpr size_t MAX_VOICES     = 20;
     static constexpr size_t INITIAL_VOICES = 3;
@@ -52,7 +54,8 @@ private:
     float updateAngleData (float frequency);
     
     std::array<Voice, MAX_VOICES> voices {};
-    size_t numActiveVoices = INITIAL_VOICES;
+    std::atomic<size_t> numActiveVoices { INITIAL_VOICES };
+    void initVoiceFrequencies();
     
     juce::SmoothedValue<float> m_amplitude;
     float currentSampleRate = 44100.0f;
@@ -68,6 +71,8 @@ private:
 
     std::atomic<float> cutoffFrequency { 1000.0f };
     std::atomic<bool> cutoffDirty { false };
+
+    std::atomic<bool> numVoicesDirty { false };
 
     juce::Random random;
 

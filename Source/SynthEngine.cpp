@@ -2,13 +2,7 @@
 
 SynthEngine::SynthEngine()
 {
-    for (size_t i = 0; i < numActiveVoices; ++i)
-    {
-        const auto freq = baseFrequency.load() / float (i + 1);
-        voices[i].currentFrequency = freq;
-        voices[i].targetFrequency  = freq;
-    }
-
+    initVoiceFrequencies();
     m_amplitude = juce::SmoothedValue<float> (targetAmplitude.load());
 
 }
@@ -24,7 +18,7 @@ void SynthEngine::prepareToPlay (int samplesPerBlockExpected, double sampleRate)
     juce::Logger::getCurrentLogger()->writeToLog (message);
 
     currentSampleRate = (float) sampleRate;
-    for (size_t i = 0; i < numActiveVoices; ++i)
+    for (size_t i = 0; i < numActiveVoices.load(); ++i)
         voices[i].angleDelta = updateAngleData (voices[i].currentFrequency);
 
     m_amplitude.reset (currentSampleRate, AMPLITUDE_RAMP);
@@ -43,8 +37,9 @@ void SynthEngine::prepareToPlay (int samplesPerBlockExpected, double sampleRate)
 void SynthEngine::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferToFill)
 {
     bufferToFill.clearActiveBufferRegion();
+    size_t currentActiveVoices = numActiveVoices.load();
 
-    if (numActiveVoices == 0)
+    if (currentActiveVoices == 0)
         return;
 
     if(envDirty.exchange(false)) {
@@ -59,9 +54,12 @@ void SynthEngine::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferT
     if (cutoffDirty.exchange(false))
         lowpassFilter.setCutoffFrequencyHz(cutoffFrequency.load());
 
+    if(numVoicesDirty.exchange(false))
+        initVoiceFrequencies();
+
     const auto base = baseFrequency.load();
     voices[0].targetFrequency = base;
-    for (size_t i = 1; i < numActiveVoices; ++i)
+    for (size_t i = 1; i < currentActiveVoices; ++i)
         voices[i].targetFrequency = std::max (base / float (i + 1), MIN_VOICE_FREQ);
 
     m_amplitude.setTargetValue (targetAmplitude);
@@ -70,7 +68,7 @@ void SynthEngine::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferT
     const auto numSamples  = bufferToFill.numSamples;
 
     std::array<float, MAX_VOICES> freqIncrement {};
-    for (size_t i = 0; i < numActiveVoices; ++i)
+    for (size_t i = 0; i < currentActiveVoices; ++i)
         freqIncrement[i] = (voices[i].targetFrequency - voices[i].currentFrequency) / (float) numSamples;
 
     for (int sample = 0; sample < numSamples; ++sample)
@@ -79,7 +77,7 @@ void SynthEngine::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferT
         const auto env = envelope.getNextSample();
         auto currentSample = 0.0f;
 
-        for (size_t i = 0; i < numActiveVoices; ++i)
+        for (size_t i = 0; i < currentActiveVoices; ++i)
         {
             currentSample += std::sin (voices[i].currentAngle);
             voices[i].currentFrequency += freqIncrement[i];
@@ -88,7 +86,7 @@ void SynthEngine::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferT
             if (voices[i].currentAngle >= juce::MathConstants<float>::twoPi)
                 voices[i].currentAngle -= juce::MathConstants<float>::twoPi;
         }
-        currentSample /= (float) numActiveVoices;
+        currentSample /= (float) currentActiveVoices;
 
         for (auto channel = 0; channel < numChannels; ++channel)
             bufferToFill.buffer->getWritePointer (channel, bufferToFill.startSample)[sample] = currentSample * env * gain;
@@ -109,4 +107,14 @@ float SynthEngine::updateAngleData (float frequency)
 {
     auto cyclesPerSample = frequency / currentSampleRate;
     return cyclesPerSample * 2.0f * juce::MathConstants<float>::pi;
+}
+
+void SynthEngine::initVoiceFrequencies()
+{
+    for (size_t i = 0; i < numActiveVoices.load(); ++i)
+    {
+        const auto freq = baseFrequency.load() / float (i + 1);
+        voices[i].currentFrequency = freq;
+        voices[i].targetFrequency  = freq;
+    }
 }
