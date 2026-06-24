@@ -4,7 +4,6 @@ SynthEngine::SynthEngine()
 {
     initVoiceFrequencies();
     m_amplitude = juce::SmoothedValue<float> (targetAmplitude.load());
-
 }
 
 SynthEngine::~SynthEngine() = default;
@@ -79,6 +78,8 @@ void SynthEngine::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferT
 
         for (size_t i = 0; i < currentActiveVoices; ++i)
         {
+            // todo: differ between oscillator type sine or noise
+            // todo: make toggle between pink or brownian noise ( 1 / f * noise)
             currentSample += std::sin (voices[i].currentAngle);
             voices[i].currentFrequency += freqIncrement[i];
             voices[i].angleDelta = updateAngleData (voices[i].currentFrequency);
