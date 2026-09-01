@@ -5,6 +5,7 @@
 
 #include <array>
 #include <atomic>
+#include "OscillatorType.h"
 
 class SynthEngine
 {
@@ -26,6 +27,9 @@ public:
     void setDecay(float d) {envDecay = d; envDirty = true;}
     void setSustain(float s) {envSustain = s; envDirty = true;}
     void setRelease(float r) {envRelease = r; envDirty = true;}
+
+    void setOscillatorType(OscillatorType type) {oscillatorType = type; }
+    OscillatorType getOscillatorType() const { return oscillatorType.load(); }
 
     void setCutoffFrequency(float f) { cutoffFrequency = f; cutoffDirty = true;}
     float getCutoffFrequency() const { return cutoffFrequency.load(); }
@@ -77,4 +81,6 @@ private:
     juce::Random random;
 
     juce::dsp::LadderFilter<float> lowpassFilter; 
+
+    std::atomic<OscillatorType> oscillatorType {SINE};
 };

@@ -30,6 +30,7 @@ void SynthEngine::prepareToPlay (int samplesPerBlockExpected, double sampleRate)
     juce::dsp::ProcessSpec filterSpec { sampleRate, (juce::uint32)samplesPerBlockExpected, 2 };
     lowpassFilter.prepare(filterSpec);
 
+    oscillatorType = BROWNIAN;
 
 }
 
@@ -78,9 +79,21 @@ void SynthEngine::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferT
 
         for (size_t i = 0; i < currentActiveVoices; ++i)
         {
-            // todo: differ between oscillator type sine or noise
-            // todo: make toggle between pink or brownian noise ( 1 / f * noise)
-            currentSample += std::sin (voices[i].currentAngle);
+            switch(oscillatorType.load())
+            {
+                case SINE:
+                currentSample += std::sin (voices[i].currentAngle);
+                break;
+                case WHITE:
+                currentSample +=  random.nextFloat() * 2.0f - 1.0f;
+                break;
+                case BROWNIAN:
+                currentSample += (random.nextFloat() * 0.1) * 2.0f - 1.0f;
+                break;
+                case PINK:
+                currentSample += (random.nextFloat() * 0.65) * 2.0f - 1.0f;
+                break;
+            }
             voices[i].currentFrequency += freqIncrement[i];
             voices[i].angleDelta = updateAngleData (voices[i].currentFrequency);
             voices[i].currentAngle += voices[i].angleDelta;
