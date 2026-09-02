@@ -4,4 +4,5 @@ enum OscillatorType
     WHITE = 1,
     BROWNIAN = 2,
     PINK = 3
+    // todo: SINE + NOISE
 };

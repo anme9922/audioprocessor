@@ -9,7 +9,8 @@
     your controls and content.
 */
 class MainComponent  : public juce::AudioAppComponent,
-                    public juce::Slider::Listener
+                    public juce::Slider::Listener,
+                    public juce::ComboBox::Listener
 {
 public:
     //==============================================================================
@@ -21,6 +22,7 @@ public:
     void getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferToFill) override;
     void releaseResources() override;
     void sliderValueChanged (juce::Slider* slider) override;
+    void comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged) override;
   
     //==============================================================================
     void paint (juce::Graphics& g) override;
@@ -52,6 +54,8 @@ private:
     juce::Label freqLabel;
     juce::Label cutoffLabel;
     juce::Label numVoicesLabel;
+
+    juce::ComboBox oscType;
 
     struct SliderComponent
     {

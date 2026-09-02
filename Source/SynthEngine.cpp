@@ -30,7 +30,7 @@ void SynthEngine::prepareToPlay (int samplesPerBlockExpected, double sampleRate)
     juce::dsp::ProcessSpec filterSpec { sampleRate, (juce::uint32)samplesPerBlockExpected, 2 };
     lowpassFilter.prepare(filterSpec);
 
-    oscillatorType = BROWNIAN;
+    oscillatorType = SINE;
 
 }
 

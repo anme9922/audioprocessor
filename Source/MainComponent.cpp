@@ -49,6 +49,10 @@ MainComponent::MainComponent()
         synthEngine.noteOff();
     };
 
+    oscType.addItemList({"SINE", "WHITE", "BROWNIAN", "PINK"}, 1);
+    oscType.addListener(this);
+    oscType.setSelectedId(1, juce::NotificationType::dontSendNotification);
+
     addAndMakeVisible(&muteButton);
     addAndMakeVisible(&playButton);
     addAndMakeVisible(&stopButton);
@@ -61,6 +65,8 @@ MainComponent::MainComponent()
     addAndMakeVisible(&freqLabel);
     addAndMakeVisible(&cutoffLabel);
     addAndMakeVisible(&numVoicesLabel);
+
+    addAndMakeVisible(&oscType);
    
 
     // Some platforms require permissions to open input channels so request that here
@@ -136,6 +142,10 @@ void MainComponent::sliderValueChanged (juce::Slider* s)
     }
 }
 
+void MainComponent::comboBoxChanged(juce::ComboBox *comboBoxThatHasChanged)
+{
+    synthEngine.setOscillatorType(static_cast<OscillatorType>(comboBoxThatHasChanged->getSelectedId() - 1));
+}
 
 //==============================================================================
 void MainComponent::paint (juce::Graphics& g)
@@ -153,6 +163,8 @@ void MainComponent::resized()
     muteButton.setBounds(40, 90, 100, 20);
     playButton.setBounds(160, 90, 100, 20);
     stopButton.setBounds(280, 90, 100, 20);
+
+    oscType.setBounds(400, 90, 100, 20);
 
     cutoffSlider.setBounds(80, 250, getWidth() - 120, 20);
     cutoffLabel.setBounds(40, 250, 40, 20);
