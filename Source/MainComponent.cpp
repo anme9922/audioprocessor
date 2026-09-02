@@ -49,7 +49,7 @@ MainComponent::MainComponent()
         synthEngine.noteOff();
     };
 
-    oscType.addItemList({"SINE", "WHITE", "PINK", "BROWNIAN"}, 1);
+    oscType.addItemList({"SINE", "WHITE", "BROWNIAN", "PINK"}, 1);
     oscType.addListener(this);
     oscType.setSelectedId(1, juce::NotificationType::dontSendNotification);
 
